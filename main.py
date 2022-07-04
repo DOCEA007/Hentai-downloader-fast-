@@ -1,4 +1,3 @@
-from numpy import full
 from requests import get
 from io import BytesIO
 color="#252626"
