@@ -8,6 +8,7 @@ from random import randint
 from os import getcwd
 from threading import Thread
 from random import randint
+from pathlib import Path
 class image_downloader:
     def __init__(self, master):
         self.master = master
@@ -47,7 +48,11 @@ class image_downloader:
             data = BytesIO(get(img_url).content)
             sleep(0.1)
             img = Image.open(data)
-            img.save(f"Image{randint(0,1000)}.png")
+            print(f"{Path(__file__).parent.resolve()}\Image{randint(0,1000)}.png")
+            try:
+                img.save(f"{Path(__file__).parent.resolve()}\Image{randint(0,9)}{randint(0,9)}{randint(0,9)}{randint(0,9)}{randint(0,9)}.png")
+            except:
+                print("Error saving")
 
         def main():
             # create threads
