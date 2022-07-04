@@ -1,0 +1,8 @@
+requests
+io
+tkinter
+Pillow
+time
+random
+threading
+pathlib

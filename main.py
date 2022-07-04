@@ -5,7 +5,6 @@ from tkinter import RIGHT, Button, Label, Entry, Frame, LEFT, Tk
 from PIL import Image
 from time import sleep, perf_counter
 from random import randint
-from os import getcwd
 from threading import Thread
 from random import randint
 from pathlib import Path
