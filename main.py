@@ -41,18 +41,22 @@ class image_downloader:
         url = f"https://gelbooru.com/index.php?page=dapi&s=post&q=index&json=1&limit=1&tags={tags}%20sort:random"
         self.master.withdraw()
         def thread_func():
-            response = get(url).json()
-            img_url = response['post'][0]['file_url']
-            sleep(0.1)
-            data = BytesIO(get(img_url).content)
-            sleep(0.1)
-            img = Image.open(data)
-            print(f"{Path(__file__).parent.resolve()}\Image{randint(0,1000)}.png")
-            try:
-                img.save(f"{Path(__file__).parent.resolve()}\Image{randint(0,9)}{randint(0,9)}{randint(0,9)}{randint(0,9)}{randint(0,9)}.png")
-            except:
-                print("Error saving")
-
+            while True:
+                try:
+                    response = get(url).json()
+                    img_url = response['post'][0]['file_url']
+                    sleep(0.1)
+                    data = BytesIO(get(img_url).content)
+                    sleep(0.1)
+                    img = Image.open(data)
+                    print(f"{Path(__file__).parent.resolve()}\Image{randint(0,1000)}.png")
+                    try:
+                        img.save(f"{Path(__file__).parent.resolve()}\Image{randint(0,9)}{randint(0,9)}{randint(0,9)}{randint(0,9)}{randint(0,9)}.png")
+                        break
+                    except:
+                        print("Error saving")        
+                except:
+                    print("Error, trying again")
         def main():
             # create threads
             threads = []
