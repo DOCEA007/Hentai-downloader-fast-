@@ -82,4 +82,3 @@ class image_downloader:
 root = Tk() 
 downloader = image_downloader(root)
 root.mainloop()
-
