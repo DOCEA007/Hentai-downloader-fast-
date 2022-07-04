@@ -1,3 +1,4 @@
+from numpy import full
 from requests import get
 from io import BytesIO
 color="#252626"
@@ -8,6 +9,7 @@ from random import randint
 from threading import Thread
 from random import randint
 from pathlib import Path
+import os.path
 class image_downloader:
     def __init__(self, master):
         self.master = master
@@ -27,6 +29,12 @@ class image_downloader:
 
         self.close_button = Button(master, text="Download!", command=self.download, bg=color, fg="white")
         self.close_button.place(y=43, x=85)
+    def convert_bytes(size):
+        """ Convert bytes to KB, or MB or GB"""
+        for x in ['bytes', 'KB', 'MB', 'GB', 'TB']:
+            if size < 1024.0:
+                return "%3.1f %s" % (size, x)
+            size /= 1024.0  
     def download(self):
         try:
             number = int(self.number_of_images.get())
@@ -40,6 +48,7 @@ class image_downloader:
             tags="ass%20boobs"
         url = f"https://gelbooru.com/index.php?page=dapi&s=post&q=index&json=1&limit=1&tags={tags}%20sort:random"
         self.master.withdraw()
+        sizes=[]
         def thread_func():
             while True:
                 try:
@@ -49,9 +58,14 @@ class image_downloader:
                     data = BytesIO(get(img_url).content)
                     sleep(0.1)
                     img = Image.open(data)
-                    print(f"{Path(__file__).parent.resolve()}\Image{randint(0,1000)}.png")
+                    fullname = f"{Path(__file__).parent.resolve()}\Image{randint(0,1000)}.png"
+                    f_size = os.path.getsize(r'E:\\Hentai-downloader-fast-\\README.md')
+                    x = self.convert_bytes(f_size)
+                    if x in sizes:
+                        continue
+                    sizes.append(x)
                     try:
-                        img.save(f"{Path(__file__).parent.resolve()}\Image{randint(0,9)}{randint(0,9)}{randint(0,9)}{randint(0,9)}{randint(0,9)}.png")
+                        img.save(fullname)
                         break
                     except:
                         print("Error saving")        
