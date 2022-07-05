@@ -1,7 +1,7 @@
 from requests import get
 from io import BytesIO
 color="#252626"
-from tkinter import RIGHT, Button, Label, Entry, Frame, LEFT, Tk
+from tkinter import BOTTOM, RIGHT, Button, Label, Entry, Frame, LEFT, Tk
 from PIL import Image
 from time import sleep, perf_counter
 from random import randint
@@ -9,6 +9,7 @@ from threading import Thread
 from random import randint
 from pathlib import Path
 import os.path
+from os import remove
 class image_downloader:
     def __init__(self, master):
         self.master = master
@@ -25,15 +26,12 @@ class image_downloader:
         Label(frame1,text=' Amount:', bg=color, fg="white").pack(side=LEFT)
         self.number_of_images = Entry(frame1,width=4, bg=color, fg="white")
         self.number_of_images.pack()
-
-        self.close_button = Button(master, text="Download!", command=self.download, bg=color, fg="white")
-        self.close_button.place(y=43, x=85)
-    def convert_bytes(size):
-        """ Convert bytes to KB, or MB or GB"""
-        for x in ['bytes', 'KB', 'MB', 'GB', 'TB']:
-            if size < 1024.0:
-                return "%3.1f %s" % (size, x)
-            size /= 1024.0  
+        frame2 = Frame(master,bg=color)
+        frame2.pack(side=BOTTOM)
+        self.close_button = Button(frame2, text="Download!", command=self.download, bg=color, fg="white").pack(side=LEFT)
+        Label(frame2,text='   ', bg=color).pack(side=LEFT)
+        self.post_cleanup_button = Button(frame2, text="Clean dupes!", command=self.post_cleanup, bg=color, fg="white").pack(side=RIGHT)
+      
     def download(self):
         try:
             number = int(self.number_of_images.get())
@@ -89,7 +87,36 @@ class image_downloader:
             print(f'It took {end_time- start_time :0.2f} second(s) to complete.')
         self.master.deiconify()
         self.master.deiconify()
-            
+    def post_cleanup(self):
+        directory = Path(__file__).parent.resolve()
+        file_sizes = []
+        def convert_bytes(size):
+            """ Convert bytes to KB, or MB or GB"""
+            for x in ['bytes', 'KB', 'MB', 'GB', 'TB']:
+                if size < 1024.0:
+                    return "%3.1f %s" % (size, x)
+                size /= 1024.0
+        dupes_found = 0
+        for filename in os.listdir(directory):
+            f = os.path.join(directory, filename)
+            # checking if it is a file
+            if os.path.isfile(f):
+                print(f)
+                f_size = os.path.getsize(f)
+                x = convert_bytes(f_size)
+                print('file size is', x)
+                if x in file_sizes:
+                    print(f'file \"{filename}\" is most likely a duplicate')
+                    dupes_found+=1
+                    remove(f)
+                    continue
+                file_sizes.append(x)
+        if dupes_found == 0:
+            print('There are no duplicate files')
+        elif dupes_found == 1:
+            print("One duplicate file was deleted")
+        else:
+            print(f'{dupes_found} duplicate files were deleted')
 root = Tk() 
 downloader = image_downloader(root)
 root.mainloop()
