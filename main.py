@@ -57,14 +57,9 @@ class image_downloader:
                     data = BytesIO(get(img_url).content)
                     sleep(0.1)
                     img = Image.open(data)
-                    fullname = f"{Path(__file__).parent.resolve()}\Image{randint(0,1000)}.png"
-                    f_size = os.path.getsize(r'E:\\Hentai-downloader-fast-\\README.md')
-                    x = self.convert_bytes(f_size)
-                    if x in sizes:
-                        continue
-                    sizes.append(x)
+                    print(f"{Path(__file__).parent.resolve()}\Image{randint(0,1000)}.png")
                     try:
-                        img.save(fullname)
+                        img.save(f"{Path(__file__).parent.resolve()}\Image{randint(0,9)}{randint(0,9)}{randint(0,9)}{randint(0,9)}{randint(0,9)}.png")
                         break
                     except:
                         print("Error saving")        
