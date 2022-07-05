@@ -1,7 +1,8 @@
+from re import T
 from requests import get
 from io import BytesIO
 color="#252626"
-from tkinter import BOTTOM, RIGHT, Button, Label, Entry, Frame, LEFT, Tk
+from tkinter import BOTTOM, RAISED, RIGHT, Button, Label, Entry, Frame, LEFT, Tk, X
 from PIL import Image
 from time import sleep, perf_counter
 from random import randint
@@ -10,11 +11,44 @@ from random import randint
 from pathlib import Path
 import os.path
 from os import remove
+from imghdr import what
 class image_downloader:
     def __init__(self, master):
         self.master = master
         master.configure(bg=color)
-        master.geometry('270x75')
+        master.geometry('270x90+800+500')
+        master.resizable(False, False)
+        # Custom title bar so that its dark theme cause yes'nt
+        master.overrideredirect(True)
+        fake_title_bar = Frame(master, bg=color, relief=RAISED, bd=0.5)
+        fake_title_bar.pack(expand=1, fill=X)
+        fake_title_label = Label(fake_title_bar, text="\t          Sauce downloader", bg=color, fg="white")
+        fake_title_label.pack(side=LEFT)
+            #Binding the title bar
+        def move_app(e):
+            master.geometry(f'+{e.x_root-130}+{e.y_root-10}')
+        def minimize():
+            master.update_idletasks()
+            master.overrideredirect(False)
+            master.state('iconic')
+        def return_to_normal_state(e="temp"):
+            # master.update_idletasks()
+            # master.overrideredirect(True)
+            # master.deiconify()
+            print(perf_counter())
+        def bar_check_loop():
+            while True:
+                if master.state() == 'iconic':
+                    master.bind("<Map>", return_to_normal_state)
+        fake_title_bar.bind('<B1-Motion>', move_app)
+        fake_title_label.bind('<B1-Motion>', move_app)
+        
+        
+            #Adding a close button
+        fake_title_close_button = Button(fake_title_bar, text="X", bg=color, fg="white", command=master.quit).pack(side=RIGHT)
+
+        # fake_title_min_button = Button(fake_title_bar, text="━", bg=color, fg="white", command=minimize).pack(side=RIGHT)
+        #=====================================================
         master.title("Sauce downloader")
         self.label = Label(master, text="Downloader by ~your mother", bg=color, fg="white")
         self.label.pack()
@@ -31,7 +65,7 @@ class image_downloader:
         self.close_button = Button(frame2, text="Download!", command=self.download, bg=color, fg="white").pack(side=LEFT)
         Label(frame2,text='   ', bg=color).pack(side=LEFT)
         self.post_cleanup_button = Button(frame2, text="Clean dupes!", command=self.post_cleanup, bg=color, fg="white").pack(side=RIGHT)
-      
+        
     def download(self):
         try:
             number = int(self.number_of_images.get())
@@ -101,22 +135,24 @@ class image_downloader:
             f = os.path.join(directory, filename)
             # checking if it is a file
             if os.path.isfile(f):
-                print(f)
-                f_size = os.path.getsize(f)
-                x = convert_bytes(f_size)
-                print('file size is', x)
-                if x in file_sizes:
-                    print(f'file \"{filename}\" is most likely a duplicate')
-                    dupes_found+=1
-                    remove(f)
-                    continue
-                file_sizes.append(x)
+                if what(f) == "png":
+                    print(f)
+                    f_size = os.path.getsize(f)
+                    x = convert_bytes(f_size)
+                    print('file size is', x)
+                    if x in file_sizes:
+                        print(f'file \"{filename}\" is most likely a duplicate')
+                        dupes_found+=1
+                        remove(f)
+                        continue
+                    file_sizes.append(x)
         if dupes_found == 0:
             print('There are no duplicate files')
         elif dupes_found == 1:
             print("One duplicate file was deleted")
         else:
             print(f'{dupes_found} duplicate files were deleted')
-root = Tk() 
+root = Tk()
 downloader = image_downloader(root)
+
 root.mainloop()
