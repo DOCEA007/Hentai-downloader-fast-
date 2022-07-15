@@ -1,4 +1,3 @@
-from re import T
 from requests import get
 from io import BytesIO
 color="#252626"
