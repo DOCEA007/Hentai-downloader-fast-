@@ -11,6 +11,8 @@ from pathlib import Path
 import os.path
 from os import remove
 from imghdr import what
+import hashlib
+
 class image_downloader:
     def __init__(self, master):
         self.master = master
@@ -64,6 +66,26 @@ class image_downloader:
         self.close_button = Button(frame2, text="Download!", command=self.download, bg=color, fg="white").pack(side=LEFT)
         Label(frame2,text='   ', bg=color).pack(side=LEFT)
         self.post_cleanup_button = Button(frame2, text="Clean dupes!", command=self.post_cleanup, bg=color, fg="white").pack(side=RIGHT)
+    
+    def hash_file(filename):
+        """"This function returns the SHA-1 hash
+        of the file passed into it"""
+
+        # make a hash object
+        h = hashlib.sha1()
+
+        # open file for reading in binary mode
+        with open(filename,'rb') as file:
+
+            # loop till the end of the file
+            chunk = 0
+            while chunk != b'':
+                # read only 1024 bytes at a time
+                chunk = file.read(1024)
+                h.update(chunk)
+
+        # return the hex representation of digest
+        return h.hexdigest()
         
     def download(self):
         try:
